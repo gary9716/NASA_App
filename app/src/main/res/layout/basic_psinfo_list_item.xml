@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="pid"
+        android:id="@+id/pid"
+        android:layout_marginLeft="31dp"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="31dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="userName"
+        android:id="@+id/uname"
+        android:layout_below="@+id/pid"
+        android:layout_alignLeft="@+id/pid"
+        android:layout_alignStart="@+id/pid"
+        android:layout_marginTop="15dp"
+        android:visibility="visible" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="state"
+        android:id="@+id/pstate"
+        android:layout_alignTop="@+id/pid"
+        android:layout_toRightOf="@+id/pid"
+        android:layout_toEndOf="@+id/pid"
+        android:layout_marginLeft="111dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="cpu"
+        android:id="@+id/cpuusage"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/uname"
+        android:layout_alignLeft="@+id/uname"
+        android:layout_alignStart="@+id/uname"
+        android:visibility="visible" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="mem"
+        android:id="@+id/memusage"
+        android:layout_alignTop="@+id/cpuusage"
+        android:layout_alignLeft="@+id/pstate"
+        android:layout_alignStart="@+id/pstate" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="elapsed"
+        android:id="@+id/elapsedtime"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/cpuusage"
+        android:layout_alignLeft="@+id/cpuusage"
+        android:layout_alignStart="@+id/cpuusage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="command"
+        android:id="@+id/cmd"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/elapsedtime"
+        android:layout_alignLeft="@+id/elapsedtime"
+        android:layout_alignStart="@+id/elapsedtime" />
+</RelativeLayout>
