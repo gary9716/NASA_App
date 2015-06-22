@@ -99,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         super.onSuccess(statusCode, headers, response);
-                        //parseJSON(response);
-
+                        ArrayList<ProcessInfo> fetchedResult = parseJSON(response);
+                        psInfoRendererAdapter.replaceAll(fetchedResult);
                     }
 
                     @Override

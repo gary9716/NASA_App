@@ -29,8 +29,8 @@ public class PSInfoRendererAdapter implements Filterable{
 
     RendererAdapter<ProcessInfo> rendererAdapter;
     ArrayList<ProcessInfo> allData = null;
-    ArrayList<ProcessInfo> filteredData = null;
     ItemFilter itemFilter = new ItemFilter();
+    PSInfoAdapteeCollection mPSInfoCollection;
 
     public void changeOrdering() {
         orderingCoeff *= -1;
@@ -38,17 +38,16 @@ public class PSInfoRendererAdapter implements Filterable{
 
     public PSInfoRendererAdapter(Context context, ArrayList<ProcessInfo> psInfoList) {
         allData = psInfoList;
-        filteredData = psInfoList;
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         PSInfoRendererBuilder psInfoRendererBuilder = new PSInfoRendererBuilder(context);
-        mPSInfoCollection.addAll(psInfoList);
+        mPSInfoCollection = new PSInfoAdapteeCollection();
+        mPSInfoCollection.replaceAll(allData);
         rendererAdapter = new RendererAdapter<ProcessInfo>(layoutInflater, psInfoRendererBuilder, mPSInfoCollection);
 
     }
 
-
     public void sort(int metricIndex) {
-        Collections.sort(filteredData, comparators[metricIndex]);
+        Collections.sort(mPSInfoCollection.getInternalList(), comparators[metricIndex]);
         rendererAdapter.notifyDataSetChanged();
     }
 
@@ -143,15 +142,14 @@ public class PSInfoRendererAdapter implements Filterable{
         @Override
         protected void publishResults(CharSequence constraint, FilterResults filterResults) {
 
-            rendererAdapter.clear();
-            rendererAdapter.addAll((ArrayList<ProcessInfo>)filterResults.values);
+            mPSInfoCollection.replaceAll((ArrayList<ProcessInfo>) filterResults.values);
             rendererAdapter.notifyDataSetChanged();
 
         }
 
     }
 
-    AdapteeCollection<ProcessInfo> mPSInfoCollection = new AdapteeCollection<ProcessInfo>() {
+    private class PSInfoAdapteeCollection implements AdapteeCollection<ProcessInfo> {
         ArrayList<ProcessInfo> psInfoList = null;
 
         @Override
@@ -184,17 +182,13 @@ public class PSInfoRendererAdapter implements Filterable{
 
         @Override
         public boolean addAll(Collection<? extends ProcessInfo> collection) {
-            if(collection instanceof ArrayList) {
-                psInfoList = (ArrayList)collection;
-            }
-            else {
-                if(psInfoList == null) {
-                    psInfoList = new ArrayList<>();
-                }
 
-                for(ProcessInfo psInfo : collection) {
-                    psInfoList.add(psInfo);
-                }
+            if(psInfoList == null) {
+                psInfoList = new ArrayList<>();
+            }
+
+            for(ProcessInfo psInfo : collection) {
+                psInfoList.add(psInfo);
             }
 
             return true;
@@ -223,7 +217,36 @@ public class PSInfoRendererAdapter implements Filterable{
                 psInfoList.clear();
             }
         }
-    };
 
+        public boolean replaceAll(Collection<? extends ProcessInfo> collection) {
+            if(collection instanceof ArrayList) {
+                psInfoList = (ArrayList<ProcessInfo>) collection;
+            }
+            else {
+                if (psInfoList != null) {
+                    psInfoList.clear();
+                }
+                else {
+                    psInfoList = new ArrayList<>();
+                }
+
+                for(ProcessInfo psInfo : collection) {
+                    psInfoList.add(psInfo);
+                }
+            }
+
+            return true;
+        }
+
+        public ArrayList<ProcessInfo> getInternalList() {
+            return psInfoList;
+        }
+    }
+
+    public void replaceAll(ArrayList<ProcessInfo> result) {
+        allData = result;
+        mPSInfoCollection.replaceAll(allData);
+        rendererAdapter.notifyDataSetChanged();
+    }
 
 }
