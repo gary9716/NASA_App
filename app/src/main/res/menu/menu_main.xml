@@ -16,5 +16,7 @@
     <item android:id="@+id/sort_by_etime" android:title="sort by time"
         android:orderInCategory="5" app:showAsAction="never" />
     <item android:id="@+id/sort_des_or_as" android:title="descent"
-        android:orderInCategory="6"  />
+        android:orderInCategory="6" app:showAsAction="never"/>
+    <item android:id="@+id/show_zombie" android:title="show zombies"
+        android:orderInCategory="7" app:showAsAction="never"/>
 </menu>

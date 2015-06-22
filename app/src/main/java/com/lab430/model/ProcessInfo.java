@@ -1,5 +1,7 @@
 package com.lab430.model;
 
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONObject;
@@ -33,8 +35,19 @@ public class ProcessInfo {
     public String issuedCommand;
 
     public boolean areConditionsFulfilled(JSONObject filterObj) {
+        try {
+            if (state.toLowerCase().contains(filterObj.getString("state"))) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch(Exception e) {
+
+        }
+
         return true;
-        //wait for implemented
     }
 
 

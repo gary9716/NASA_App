@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private Gson gson;
     private Type listType;
     private PSInfoRendererAdapter psInfoRendererAdapter;
-
+    private String zombieFilterStr = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +76,15 @@ public class MainActivity extends AppCompatActivity {
         String jsonStr = readFile("test.json");
         ArrayList<ProcessInfo> psInfoList = null;
         psInfoList = parseJSON(jsonStr);
+
+        try {
+            JSONObject filterJson = new JSONObject();
+            filterJson.put("state", "Z");
+            zombieFilterStr = filterJson.toString();
+        }
+        catch (Exception e) {
+
+        }
 
         psInfoRendererAdapter = new PSInfoRendererAdapter(this, psInfoList);
         psListView.setAdapter(psInfoRendererAdapter.getAdapter());
@@ -247,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
             previousSortingMetricIndex = orderID;
             psInfoRendererAdapter.sort(orderID);
         }
-        else {
+        else if(orderID == 6){
             psInfoRendererAdapter.changeOrdering();
             if(psInfoRendererAdapter.orderingCoeff == 1) {
                 item.setTitle("descent");
@@ -258,6 +267,10 @@ public class MainActivity extends AppCompatActivity {
 
             psInfoRendererAdapter.sort(previousSortingMetricIndex);
         }
+        else {
+            psInfoRendererAdapter.getFilter().filter(zombieFilterStr);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
