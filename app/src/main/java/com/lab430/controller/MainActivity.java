@@ -25,6 +25,9 @@ import android.widget.Toast;
 
 import com.example.lab430.psinfoandnotificationreceiver.R;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.pubnub.api.Callback;
+import com.pubnub.api.Pubnub;
+import com.pubnub.api.PubnubError;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -60,22 +63,59 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         initViews();
 
-        String jsonStr = readFile("test.json");
-
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Duration.class, new DurationDeserializer());
         listType = new TypeToken<List<ProcessInfo>>(){}.getType();
         gson = gsonBuilder.create();
 
+        String jsonStr = readFile("test.json");
         ArrayList<ProcessInfo> psInfoList = null;
         psInfoList = parseJSON(jsonStr);
 
         psInfoRendererAdapter = new PSInfoRendererAdapter(this, psInfoList);
         psListView.setAdapter(psInfoRendererAdapter.getAdapter());
 
-
-
+        Pubnub pubnub = new Pubnub(ProjectConfig.pubKey, ProjectConfig.subKey);
+        try {
+            pubnub.subscribe(ProjectConfig.channelName, pubnubCallback);
+        }
+        catch(Exception e) {
+            Log.d(ProjectConfig.pubnubTag, "failed to subsrible channel");
+        }
     }
+
+    Callback pubnubCallback = new Callback() {
+
+        @Override
+        public void successCallback(String channel, Object message) {
+            Log.d(ProjectConfig.pubnubTag,channel + " : " + message.toString());
+        }
+
+        @Override
+        public void errorCallback(String channel, PubnubError error) {
+            Log.d(ProjectConfig.pubnubTag,"ERROR on channel " + channel
+                    + " : " + error.toString());
+        }
+
+        @Override
+        public void connectCallback(String channel, Object message) {
+            super.connectCallback(channel, message);
+            Log.d(ProjectConfig.pubnubTag,"connect to channel:" + channel);
+        }
+
+        @Override
+        public void disconnectCallback(String channel, Object message) {
+            super.disconnectCallback(channel, message);
+            Log.d(ProjectConfig.pubnubTag,"disconnect from channel:" + channel);
+        }
+
+        @Override
+        public void reconnectCallback(String channel, Object message) {
+            super.reconnectCallback(channel, message);
+            Log.d(ProjectConfig.pubnubTag,"reconnect from channel:" + channel);
+        }
+
+    };
 
     private void initViews() {
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -94,13 +134,14 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                },3000);
 
-                PSRestClient.instance.get(ProjectConfig.allPSInfoRoute, null, new JsonHttpResponseHandler() {
+                PSRestClient.instance.get(ProjectConfig.allPSInfoRouteUncached, null, new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         super.onSuccess(statusCode, headers, response);
                         ArrayList<ProcessInfo> fetchedResult = parseJSON(response);
                         psInfoRendererAdapter.replaceAll(fetchedResult);
+                        psInfoRendererAdapter.sort(previousSortingMetricIndex);
                     }
 
                     @Override
@@ -181,9 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         psListView.setSelection(0);
-
     }
 
     public String readFile(String filename) {
