@@ -26,4 +26,10 @@ dependencies {
     compile 'com.loopj.android:android-async-http:1.4.7'
     compile 'com.github.pedrovgs:renderers:2.0.1'
     compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.android.support:support-v4:22.1.1'
+    compile 'com.github.castorflex.smoothprogressbar:library:1.1.0'
+    compile 'com.github.castorflex.smoothprogressbar:library-circular:1.1.0'
+    compile project(':libs:GuillotineMenu-Android-master:library')
+    compile 'com.baoyz.pullrefreshlayout:library:1.0.1'
+    compile 'com.github.traex.expandablelayout:library:1.3'
 }

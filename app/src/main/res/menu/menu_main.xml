@@ -2,6 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.lab430.controller.MainActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/sort_by_pid" android:title="sort by pid"
+        android:orderInCategory="0" app:showAsAction="never" />
+    <item android:id="@+id/sort_by_uname" android:title="sort by user"
+        android:orderInCategory="1" app:showAsAction="never" />
+    <item android:id="@+id/sort_by_state" android:title="sort by state"
+        android:orderInCategory="2" app:showAsAction="never" />
+    <item android:id="@+id/sort_by_cpuusage" android:title="sort by cpu"
+        android:orderInCategory="3" app:showAsAction="never" />
+    <item android:id="@+id/sort_by_memusage" android:title="sort by mem"
+        android:orderInCategory="4" app:showAsAction="never" />
+    <item android:id="@+id/sort_by_etime" android:title="sort by time"
+        android:orderInCategory="5" app:showAsAction="never" />
+    <item android:id="@+id/sort_des_or_as" android:title="descent"
+        android:orderInCategory="6"  />
 </menu>

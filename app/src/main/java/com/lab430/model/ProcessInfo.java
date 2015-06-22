@@ -2,6 +2,8 @@ package com.lab430.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONObject;
+
 import java.util.Date;
 
 /**
@@ -29,6 +31,11 @@ public class ProcessInfo {
 
     @SerializedName("COMMAND")
     public String issuedCommand;
+
+    public boolean areConditionsFulfilled(JSONObject filterObj) {
+        return true;
+        //wait for implemented
+    }
 
 
 }

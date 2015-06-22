@@ -1,1 +1,3 @@
 include ':app'
+include ':libs:GuillotineMenu-Android-master:library'
+
