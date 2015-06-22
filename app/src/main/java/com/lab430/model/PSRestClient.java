@@ -11,13 +11,19 @@ public class PSRestClient {
     public final static String debug_tag = "restClient";
 
     private static final String BASE_URL = ProjectConfig.serverURL;
-    private static AsyncHttpClient client = new AsyncHttpClient();
+    public static final PSRestClient instance = new PSRestClient();
+    private AsyncHttpClient client = null;
 
-    public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+    private PSRestClient() {
+        client = new AsyncHttpClient();
+        client.setTimeout(5000);
+    }
+
+    public void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }
 
-    public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+    public void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.post(getAbsoluteUrl(url), params, responseHandler);
     }
 

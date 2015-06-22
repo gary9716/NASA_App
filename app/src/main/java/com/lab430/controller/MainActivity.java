@@ -94,14 +94,13 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                },3000);
 
-                PSRestClient.get(ProjectConfig.allPSInfoRoute, null, new JsonHttpResponseHandler() {
+                PSRestClient.instance.get(ProjectConfig.allPSInfoRoute, null, new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         super.onSuccess(statusCode, headers, response);
                         //parseJSON(response);
 
-                        refreshLayout.setRefreshing(false);
                     }
 
                     @Override
@@ -110,9 +109,21 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(PSRestClient.debug_tag, throwable.getMessage());
                         Toast.makeText(context, "failed to update, status code:" + statusCode, Toast.LENGTH_LONG);
 
-                        refreshLayout.setRefreshing(false);
                     }
 
+                    @Override
+                    public void onCancel() {
+                        super.onCancel();
+                        Toast.makeText(context, "failed to update", Toast.LENGTH_LONG);
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        super.onFinish();
+                        refreshLayout.setRefreshing(false);
+
+                    }
                 });
 
 
@@ -142,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private int previousSortingMetricIndex = 1;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -149,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int orderID = item.getOrder();
         if(orderID < 6) {
+            previousSortingMetricIndex = orderID;
             psInfoRendererAdapter.sort(orderID);
         }
         else {
@@ -159,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
             else {
                 item.setTitle("ascent");
             }
+
+            psInfoRendererAdapter.sort(previousSortingMetricIndex);
         }
         return super.onOptionsItemSelected(item);
     }
