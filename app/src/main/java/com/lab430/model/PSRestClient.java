@@ -16,7 +16,7 @@ public class PSRestClient {
 
     private PSRestClient() {
         client = new AsyncHttpClient();
-        client.setTimeout(5000);
+        client.setTimeout(10000);
     }
 
     public void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {

@@ -17,4 +17,8 @@ public class ProjectConfig {
     public final static String channelName = "PSInfo";
     public final static String pubnubTag = "pubnubDebug";
 
+    public enum SysEvent {
+        ZombieReachThreshold
+    }
+
 }

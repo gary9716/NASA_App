@@ -11,7 +11,11 @@ import com.lab430.model.ProcessInfo;
 import com.lab430.model.ProjectConfig;
 import com.lab430.utility.DurationDeserializer;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +35,7 @@ import com.pubnub.api.PubnubError;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,11 +94,41 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void successCallback(String channel, Object message) {
             Log.d(ProjectConfig.pubnubTag,channel + " : " + message.toString());
+            JSONObject jsonMsg = null;
+            int eventCode = -1;
+            try {
+                jsonMsg = new JSONObject(message.toString());
+                eventCode = jsonMsg.getInt("EventCode");
+            }
+            catch(Exception e) {
+                Log.d(debug_tag, e.getMessage());
+                return;
+            }
+
+            if(eventCode == ProjectConfig.SysEvent.ZombieReachThreshold.ordinal()) {
+                int numZombies = 0;
+
+                try {
+                    numZombies = jsonMsg.getInt("#ZPS");
+                } catch (Exception e) {
+                    Log.d(debug_tag, e.getMessage());
+                    return;
+                }
+
+                final int notifyID = 1; // 通知的識別號碼
+                final int requestCode = notifyID; // PendingIntent的Request Code
+                final Intent intent = getIntent(); // 目前Activity的Intent
+                final int flags = PendingIntent.FLAG_CANCEL_CURRENT; // ONE_SHOT：PendingIntent只使用一次；CANCEL_CURRENT：PendingIntent執行前會先結束掉之前的；NO_CREATE：沿用先前的PendingIntent，不建立新的PendingIntent；UPDATE_CURRENT：更新先前PendingIntent所帶的額外資料，並繼續沿用
+                final PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), requestCode, intent, flags); // 取得PendingIntent
+                final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE); // 取得系統的通知服務
+                final Notification notification = new Notification.Builder(getApplicationContext()).setSmallIcon(R.drawable.zombie).setContentTitle("殭屍潮").setContentText("警告：系統裡有" + numZombies + "隻殭屍").setContentIntent(pendingIntent).build(); // 建立通知
+                notificationManager.notify(notifyID, notification); // 發送通知
+            }
         }
 
         @Override
         public void errorCallback(String channel, PubnubError error) {
-            Log.d(ProjectConfig.pubnubTag,"ERROR on channel " + channel
+            Log.d(ProjectConfig.pubnubTag, "ERROR on channel " + channel
                     + " : " + error.toString());
         }
 
@@ -106,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void disconnectCallback(String channel, Object message) {
             super.disconnectCallback(channel, message);
-            Log.d(ProjectConfig.pubnubTag,"disconnect from channel:" + channel);
+            Log.d(ProjectConfig.pubnubTag, "disconnect from channel:" + channel);
         }
 
         @Override
@@ -116,6 +151,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
     };
+
+    boolean successfullyUpdated = false;
 
     private void initViews() {
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -134,11 +171,14 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //                },3000);
 
+                successfullyUpdated = false;
+
                 PSRestClient.instance.get(ProjectConfig.allPSInfoRouteUncached, null, new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         super.onSuccess(statusCode, headers, response);
+                        successfullyUpdated = true;
                         ArrayList<ProcessInfo> fetchedResult = parseJSON(response);
                         psInfoRendererAdapter.replaceAll(fetchedResult);
                         psInfoRendererAdapter.sort(previousSortingMetricIndex);
@@ -148,20 +188,21 @@ public class MainActivity extends AppCompatActivity {
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         super.onFailure(statusCode, headers, responseString, throwable);
                         Log.d(PSRestClient.debug_tag, throwable.getMessage());
-                        Toast.makeText(context, "failed to update, status code:" + statusCode, Toast.LENGTH_LONG);
 
                     }
 
                     @Override
                     public void onCancel() {
                         super.onCancel();
-                        Toast.makeText(context, "failed to update", Toast.LENGTH_LONG);
 
                     }
 
                     @Override
                     public void onFinish() {
                         super.onFinish();
+                        if(!successfullyUpdated) {
+                            Toast.makeText(context, "failed to update", Toast.LENGTH_LONG);
+                        }
                         refreshLayout.setRefreshing(false);
 
                     }
